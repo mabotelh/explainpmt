@@ -128,7 +128,7 @@ class StoriesController < ApplicationController
   end
 
   def set_numeric_priority
-    new_pos = params[:story][:position]
+    new_pos = params[:value]
     render :update do |page|
       if (new_pos.index(/\D/).nil?)
         last_story = @project.last_story
@@ -137,12 +137,16 @@ class StoriesController < ApplicationController
           flash[:status] = 'The changes to the story card have been saved.'
           page.call 'location.reload'
         else
-          @error = 'Position was not updated.  Value can not be greater than last position.'
-          page[:flash_notice].replace_html :inline => "<%= error_container(@error) %>"
+          @error = "Position was not updated.  Value can not be greater than last position (" + last_story.position.to_s + ")."
+          flash[:error] = @error
+          page.call 'location.reload'
+#          page[:flash_notice].replace_html :inline => "<%= error_container(@error) %>"
         end
       else
         @error = 'Position was not updated.  You must specify a numeric value.'
-        page[:flash_notice].replace_html :inline => "<%= error_container(@error) %>"
+        flash[:error] = @error
+        page.call 'location.reload'
+#        page[:flash_notice].replace_html :inline => "<%= error_container(@error) %>"
       end
     end
   end

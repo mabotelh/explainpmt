@@ -33,7 +33,8 @@
     <td><%= story.iteration_id? ? link_to_iteration(story.iteration) : "Not Assigned" %></td>
   <% end %>
   <td><%= story.customer %></td>
-  <td><%= story.position %></td>
+  <% @story = story %>
+  <td><%= in_place_editor_field(:story, :position, {}, {:url => set_numeric_priority_project_story_path(story.project, story), :method => :put, :size => 2}) %></td>
   <% column_content_for(hide_cols, :action) do %>
     <td class="actions">
       <select onchange="take_action(this);">
@@ -44,7 +45,6 @@
         <%=option_to_audit_story(story)%>
         <%=option_to_move_story_up(story)%>
         <%=option_to_move_story_down(story)%>
-        <%=option_to_edit_story_position(story)%>
       </select>
    </td>
   <%end%>
