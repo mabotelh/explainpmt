@@ -84,6 +84,10 @@ def index
                 pointsCompletedPerIteration.size])
     end
       graph.render(:width => 600, :min_value => 0, :to => "#{RAILS_ROOT}/public/images/#{@project.name}burndown.svg")
+    respond_to do |format|
+      format.html
+      format.xml {render(:template => "stats/index.rxml", :layout=> false)}
+    end
   end
 
   def create_line(graph, title, points, numPoints)
