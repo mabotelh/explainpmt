@@ -1,0 +1,21 @@
+xml.instruct! :xml, :version=>"1.0" 
+xml.stats{
+  xml.not_estimated(@num_non_estimated_stories)
+  xml.points_completed(@pointsCompletedForProjectTotal)
+  xml.points_remaining(@pointsNotCompletedForProjectTotal)
+  xml.first_iteration(@startdate)
+  if @velocity
+     xml.velocity(sprintf("%.2f", @velocity))
+  else
+     xml.velocity(nil)
+  end
+  xml.planned_iterations(@plannedIterationsForProject)
+  if @wantedVelocityForProject
+     xml.planned_velocity(sprintf("%.2f", @wantedVelocityForProject))
+  else
+     xml.planned_velocity(nil)
+  end
+  xml.remaining_iterations(@remainingiterations)
+  xml.gap_iterations(@gapiterations)
+  xml.burn_down(compute_public_path(@project.name + 'burndown', 'images', 'svg', true))
+}
