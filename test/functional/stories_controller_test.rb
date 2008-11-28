@@ -1,16 +1,21 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'stories_controller'
+require 'application_helper'
 
 # Re-raise errors caught by the controller.
 class StoriesController; def rescue_action(e) raise e end; end
 
 class StoriesControllerTest < Test::Unit::TestCase
   fixtures ALL_FIXTURES
+
+  include Arts
   
   def setup
     @user_one = User.find 2
     @project_one = Project.find 1
+    @project_two = Project.find 2
     @iteration_one = Iteration.find 1
+    @iteration_two = Iteration.find 2
     @story_one = Story.find 1
     @story_two = Story.find 2
     @story_three = Story.find 3
@@ -30,18 +35,19 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_backlog_show_cancelled
-    get :index, 'project_id' => @project_one.id, :show_cancelled => 1
+    get :cancelled, 'project_id' => @project_one.id
     assert_response :success
     assert_template 'index'
-    assert_equal [  @story_three, @story_six, ], assigns( :stories )
+    assert_equal [  @story_three, ], assigns( :stories )
   end
 
   def test_backlog_no_iterations
     Iteration.destroy_all
+    Project.delete_all("id != #{@project_one.id}")
     get :index, 'project_id' => @project_one.id
     assert_response :success
     assert_template 'index'
-    assert_tag :tag => "div", :content => "No iterations to move story cards to."
+    assert_tag :tag => "div", :content => "Nowhere to move story cards to."
   end
 
   def test_show
@@ -52,46 +58,46 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_delete
-    get :delete_from_backlog, 'id' => @story_one.id, 'project_id' => @project_one.id
-    assert_redirected_to :controller => 'stories', :action => 'index',
+    @request.env["HTTP_REFERER"] = url_for(:controller => 'stories', :action => 'index',
+      :project_id => @project_one.id.to_s)
+    get :destroy, 'id' => @story_one.id, 'project_id' => @project_one.id
+    assert_rjs :redirect_to, :controller => 'stories', :action => 'index',
       :project_id => @project_one.id.to_s
     assert_raise( ActiveRecord::RecordNotFound ) { Story.find @story_one.id }
   end
 
-  def test_delete_from_iteration
-    @request.session[:referer] = 'http://test.host/project/1/iterations/show/1'  
-    get :delete_from_iteration, 'id' => @story_one.id, 'project_id' => @project_one.id,
-      :iteration_id => @iteration_one.id
-    assert_redirected_to 'http://test.host/project/1/iterations/show/1'
-    assert_raise( ActiveRecord::RecordNotFound ) { Story.find @story_one.id }
+  def test_new_single_empty_title
+    get :create, :project_id => @project_one.id
+    assert_response :success
+    assert_select_rjs :chained_replace_html, "flash_notice", 'title.'
   end
 
   def test_new_single
-    get :new_single, :project_id => @project_one.id
+    get :create, :project_id => @project_one.id, :story => {:title => 'Hello!'}
     assert_response :success
-    assert_template 'new_single'
+    assert_rjs :call, 'location.reload'
   end
 
   def test_create_many
     num = @project_one.stories.backlog.size
     post :create_many, :project_id => @project_one.id,
-      :story_card_titles => "New Story One\nNew Story Two\nNew Story Three"
+      :story => {:titles => "New Story One\nNew Story Two\nNew Story Three"}
     assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    #assert_template 'layouts/refresh_parent_close_popup'
     assert_equal num + 3, @project_one.stories( true ).backlog.size
     assert_equal "New story cards created.", flash[:status]
   end
   
   def test_create_empty
     num = Story.count
-    post :create_many, :project_id => @project_one.id, :story_card_titles => ''
-    assert_equal 'Please enter at least one story card title.', flash[:error]
+    post :create_many, :project_id => @project_one.id, 'story' => { 'titles' => ''}
+    assert_select_rjs :chained_replace_html, "flash_notice", 'Please enter at least one story card title.'
   end
 
   def test_edit
     get :edit, 'project_id' => @project_one.id, 'id' => @story_one.id
     assert_response :success
-    assert_template 'edit'
+#    assert_template 'edit'
     assert_equal @story_one, assigns( :story )
   end
 
@@ -104,14 +110,22 @@ class StoriesControllerTest < Test::Unit::TestCase
   def test_update
     post :update, 'project_id' => @project_one.id, 'id' => @story_one.id,
       'story' => { 'title' => 'Test Update', 'status' => 1 }
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert flash[ :status ]
+    assert_rjs :call, 'location.reload'
   end
 
+
   def test_take_ownership
+    @request.env["HTTP_REFERER"] = url_for(
+      :controller => 'iterations',
+      :action => 'show',
+      :id => @iteration_one.id.to_s,
+      :project_id => @project_one.id.to_s
+    )
+    
     get :take_ownership, 'id' => @story_one.id, 'project_id' => @project_one.id
     assert_redirected_to :controller => 'iterations', :action => 'show',
       :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s
-    assert flash[ :status ]
     assert_equal @request.session[ :current_user ],
       Story.find( @story_one.id ).owner
     assert_equal @request.session[ :current_user ].stories,
@@ -119,15 +133,65 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_release_ownership
+    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
     @story_one.owner = @request.session[ :current_user ]
     @story_one.save
 
     get :release_ownership, 'id' => @story_one.id,
       'project_id' => @project_one.id
-    assert_redirected_to :controller => 'iterations', :action => 'show',
+    assert_redirected_to :controller => :iterations, :action => :show,
       :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s
-    assert flash[ :status ]
+#    assert flash[ :status ]
     assert_nil Story.find( @story_one.id ).owner
     assert @request.session[ :current_user ].stories.empty?
+  end
+
+  def test_find_destination_invalid_destination_type
+    assert_raise RuntimeError do
+      @controller.parse_destination('n|2')
+    end
+  end
+
+  def test_find_destination_invalid_format
+    assert_raise RuntimeError do
+      @controller.parse_destination('')
+    end
+  end
+
+  def test_move_to_iteration
+    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
+
+    # test moving to an iteration
+    post :move, 'id' => 1, 'project_id' => 1,
+      'selected_stories' => [ 4, 5 ], 'move_to' => 'i|2'
+    assert_redirected_to :controller => 'iterations', :action => 'show',
+      :id => '1', :project_id => '1'
+    sc_one = Story.find 4
+    assert_equal @iteration_two, sc_one.iteration
+    sc_two = Story.find 5
+    assert_equal @iteration_two, sc_two.iteration
+    assert flash[ :status ]
+  end
+
+  def test_move_to_project
+    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
+
+    # test moving to an iteration
+    post :move, 'id' => 1, 'project_id' => 1,
+      'selected_stories' => [ 4, 5 ], 'move_to' => 'p|2'
+    assert_redirected_to :controller => 'iterations', :action => 'show',
+      :id => '1', :project_id => '1'
+    sc_one = Story.find 4
+    assert_equal @project_two, sc_one.project
+    sc_two = Story.find 5
+    assert_equal @project_two, sc_two.project
+    assert flash[ :status ]
+  end
+
+  def test_move_to_backlog
+    # test moving to backlog
   end
 end

@@ -50,8 +50,8 @@ module IterationsHelper
   def iteration_select_list_for(iterations, default)
     iterations.unshift(iterations.current) if iterations.current
     iterations.delete_at(0)
-    iterations.reverse.inject("<option value='0'>#{default}</option>") do |options, iteration|
-      options << "<option value='#{iteration.id}'>#{iteration.name}</option>"
+    iterations.reverse.inject("<option value='i|0'>#{default}</option>") do |options, iteration|
+      options << "<option value='i|#{iteration.id}'>#{iteration.name}</option>"
     end
   end
   

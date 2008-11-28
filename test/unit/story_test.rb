@@ -73,11 +73,54 @@ class StoryTest < Test::Unit::TestCase
     assert_equal 1, story.scid
   end
 
+  def test_assign_many_to_project_nil
+    # Assign to a project that is inexistent or nil
+    story = @project_one.stories.create :title => 'A Story Card'
+    story.iteration = @iteration_one
+    assert_raise RuntimeError do
+      Story.assign_many_to_project(nil, [story])
+    end
+  end
+
+  def test_assign_many_to_same_project
+    s = stories(:first)
+    updated_at = s.updated_at
+    Story.assign_many_to_project(s.project, [s])
+    assert_same s.updated_at, updated_at
+    assert_not_nil s.iteration
+  end
+
+  def test_assign_many_to_project
+    # Happy path
+    s1 = stories(:first)
+    s2 = stories(:second)
+    p1 = s1.project
+    p2 = s2.project
+
+    project = projects(:second)
+    pos = project.stories.count
+    Story.assign_many_to_project(project, [s1,s2])
+    assert_nil s1.iteration
+    assert_nil s2.iteration
+    assert pos + 1, s1.position
+    assert pos + 2, s2.position
+    assert p1.last_story.position < p1.stories.count
+    assert p2.last_story.position < p2.stories.count
+  end
+  
   def test_owner_set_to_nil_when_iteration_set_to_nil
     story = Story.find 1
     assert story.owner = User.find( 1 )
     story.iteration = nil
     story.save
+    assert_nil story.owner
+  end
+
+  def test_release_ownership
+    story = Story.find 1
+    assert story.owner = User.find( 1 )
+    story.save
+    story.release_ownership
     assert_nil story.owner
   end
 

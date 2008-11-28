@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
 map.home '', :controller => 'users', :action => 'login'
+#map.move_stories '/projects/:project_id/stories/move', :controller => 'stories', :action => 'move'
 map.resources :users, :collection => { :password_reset_confirmation => :post, :forgot => :any, :login => :get, :authenticate => :post, :logout => :get }
 map.resources :dashboards
 map.resources :errors
@@ -15,7 +16,7 @@ map.resources :projects, :member => {:xml_export => :get, :audits => :get, :team
   project.resources :stories,
     :member => {:audit => :get, :take_ownership => :put, :release_ownership => :put, :assign_ownership => :get, :assign => :post, :clone_story => :put,
         :move_up => :put, :move_down => :put, :edit_numeric_priority => :get, :set_numeric_priority => :post},
-    :collection => {:search => :get, :all => :get, :cancelled => :get, :export => :get, :export_tasks => :get, :bulk_create => :get, :create_many => :post} do |story|
+    :collection => {:search => :get, :all => :get, :cancelled => :get, :export => :get, :export_tasks => :get, :bulk_create => :get, :create_many => :post, :move => :post} do |story|
     story.resources :tasks, :member => {:take_ownership => :put, :release_ownership => :put, :assign_ownership => :get, :assign => :post}
     story.resources :acceptancetests
   end

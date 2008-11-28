@@ -9,6 +9,7 @@ first:
   points: 3
   value: 2
   risk: 1
+  position: 1
 second:
   id: 2
   scid: 2
@@ -19,6 +20,7 @@ second:
   points: 3
   value: 2
   risk: 1
+  position: 2
 third:
   id: 3
   scid: 3
@@ -28,6 +30,7 @@ third:
   points: 2
   value: 2
   risk: 1
+  position: 3
 fourth:
   id: 4
   scid: 4
@@ -39,6 +42,7 @@ fourth:
   points: 3
   value: 1
   risk: 1
+  position: 4
 fifth:
   id: 5
   scid: 5
@@ -50,6 +54,7 @@ fifth:
   points: 3
   value: 1
   risk: 1
+  position: 5
 sixth:
   id: 6
   scid: 6
@@ -59,3 +64,4 @@ sixth:
   points: 2
   value: 1
   risk: 1
+  position: 6

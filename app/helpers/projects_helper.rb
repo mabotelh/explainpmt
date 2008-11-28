@@ -37,4 +37,10 @@ module ProjectsHelper
   def link_to_add_users
     link_to_remote("Add Users to Project", :url => add_users_project_path(@project), :method => :get)
   end
+
+  def other_projects_select_list(projects)
+    projects.inject("") do |options, project|
+      options << "<option value='p|#{project.id}'>#{project.name}</option>"
+    end
+  end
 end

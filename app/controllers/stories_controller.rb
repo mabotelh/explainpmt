@@ -1,5 +1,5 @@
 class StoriesController < ApplicationController
-  before_filter :find_story, :except => [:index, :new, :create, :audit, :export, :export_tasks, :bulk_create, :create_many, :cancelled, :all, :search]
+  before_filter :find_story, :except => [:index, :new, :create, :audit, :export, :export_tasks, :bulk_create, :create_many, :cancelled, :all, :search, :move]
 
   def index
     @stories = @project.stories.backlog.select { |s|
@@ -105,6 +105,40 @@ class StoriesController < ApplicationController
       flash[:status] = "Story \"#{@story.title}\" has been deleted."
       page.redirect_to request.referer
     end
+  end
+
+  def move
+    destination = parse_destination(params[:move_to])
+    stories = Story.find(params[:selected_stories] || [])
+    case destination[0]
+      when 'i' then
+        iteration = Iteration.find(destination[1])
+        move_story_to_iteration(iteration, stories)
+      when 'p' then
+        project = Project.find(destination[1])
+        move_story_to_project(project, stories)
+    end
+    redirect_to request.referer
+  end
+
+  def parse_destination(move_to)
+    parts = move_to.split('|')
+    if parts[0] != 'i' && parts[0] !='p'
+      raise "#{parts[0]} is not supported. Please use either 'i' or 'p'" 
+    end
+    if parts.size != 2
+      raise "#{move_to} should have what type of move and the id of the object to move to"
+    end
+
+    return parts
+  end
+
+  def move_story_to_iteration(iteration, stories)
+    set_status_and_error_for(Story.assign_many_to_iteration(iteration, stories))
+  end
+  
+  def move_story_to_project(project, stories)
+    set_status_and_error_for(Story.assign_many_to_project(project, stories))
   end
 
   def move_up

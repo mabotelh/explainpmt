@@ -133,4 +133,16 @@ class ProjectTest < Test::Unit::TestCase
     num_backlog = @project_one.stories.reject{ |a| a.iteration }.size
     assert_equal num_backlog, @project_one.stories.backlog.size
   end
+
+  def test_next_position_empty_project
+    p = projects(:second)
+    assert_equal 1, p.next_position
+  end
+
+  def test_next_position_project_not_empty
+    p = projects(:second)
+    story = p.stories.create :title => 'A Story Card'
+    assert_equal 2, p.next_position
+
+  end
 end

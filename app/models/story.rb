@@ -177,6 +177,35 @@ class Story < ActiveRecord::Base
     story.save!
   end
 
+  def self.assign_many_to_project(project, stories)
+    raise "Project #{project} is not a valid project" unless project
+
+    successes, failures = [], []
+    projects = Set.new
+    stories.each do |s|
+      unless s.project == project
+        projects << s.project
+        s.project = project
+        s.iteration = nil
+        s.owner = nil
+        s.status = Story::Status::New
+        s.initiative = nil
+        s.release_id = nil
+        s.position = project.next_position
+        if s.save
+          successes << "SC#{s.scid} has been moved to project #{project.name}."
+        else
+          failures << "SC#{s.scid} could not be moved to project #{project.name}. (make sure it is defined)"
+        end
+      end
+    end
+    projects.each do |p|
+      p.stories.reprioritize
+    end
+    {:successes => successes, :failures => failures}
+
+  end
+
   def self.assign_many_to_iteration(iteration, stories)
     successes, failures = [], []
     stories.each do |s|
@@ -219,12 +248,14 @@ class Story < ActiveRecord::Base
   end
 
   def before_create
-    if last_story = project.stories.find( :first, :order => 'scid DESC' )
-      self.scid = last_story.scid + 1
-    else
-      self.scid = 1
-    end
+#    if last_story = project.stories.find( :first, :order => 'scid DESC' )
+#      self.scid = last_story.scid + 1
+#    else
+#      self.scid = 1
+#    end
+    self.scid = project.next_position
   end
+
 
   def before_save
     self.owner = nil if self.iteration.nil?

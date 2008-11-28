@@ -50,6 +50,18 @@ class Project < ActiveRecord::Base
 
 
   has_many :stories, :include => [:iteration, :initiative, :project], :dependent => :destroy do
+    def reprioritize
+      if self 
+        list = self.sort do |a,b|
+          a.position <=> b.position
+        end
+        list.each_with_index do |story,i|
+          story.position = i + 1
+          story.save
+        end
+      end
+    end
+
     def backlog
       self.select { |s| s.iteration.nil? }
     end
@@ -128,6 +140,12 @@ class Project < ActiveRecord::Base
 
   def users_available_for_addition
     User.find( :all, :order => 'last_name ASC, first_name ASC' ) - self.users
+  end
+
+  def next_position
+#    ls = last_story
+#    pos = ls ? ls.scid + 1 : 1
+    return stories.count + 1
   end
 end
 

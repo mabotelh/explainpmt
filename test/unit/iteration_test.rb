@@ -9,6 +9,8 @@ class IterationTest < Test::Unit::TestCase
     @iteration_four = Iteration.find 4
     @iteration_five = Iteration.find 5
     @iteration_six = Iteration.find 6
+    @story_one = Story.find 1
+    @story_two  = Story.find 2
   end
   
   def test_stop_date
@@ -92,5 +94,36 @@ class IterationTest < Test::Unit::TestCase
   def test_no_exception_raised_when_evaluating_stop_date_of_iteration_with_nil_length
     @iteration_one.length = nil
     assert_nothing_raised(TypeError) { @iteration_one.stop_date }
+  end
+
+  def test_move_single_story_to_iteration
+    cur_size = @iteration_two.stories.size
+    @iteration_two.stories<<@story_one
+    @iteration_two.save
+    assert_equal cur_size + 1, @iteration_two.stories.size
+    assert_equal @iteration_two, @story_one.iteration
+  end
+
+  def test_move_undefined_story_to_iteration
+    s = Story.new(:title => "Undefined Story", :project => @project_one)
+    assert s.save
+    assert_equal Story::Status::New, s.status
+    @iteration_two.stories << s
+    @iteration_two.stories.each do |story|
+      assert !story.valid?
+    end
+    assert !@iteration_two.valid?
+
+  end
+
+  def test_move_multiple_stories_to_iteration
+    cur_size = @iteration_two.stories.size
+
+    @iteration_two.stories << [@story_one, @story_two]
+    @iteration_two.save
+    assert_equal cur_size + 2, @iteration_two.stories.size
+    assert_equal @story_one.iteration, @iteration_two
+    assert_equal @story_two.iteration, @iteration_two
+
   end
 end

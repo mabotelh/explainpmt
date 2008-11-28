@@ -11,14 +11,19 @@ class Test::Unit::TestCase
 
   # Add more helper methods to be used by all tests here...
 
+  def url_for(options)
+    url = ActionController::UrlRewriter.new(@request, nil)
+    url.rewrite(options)
+  end
+  
   ALL_FIXTURES = [ :iterations,
-                   :milestones,
-                   :project_memberships,
-                   :projects,
-                   :stories,
-                   :users,
-                   :tasks,
-                   :acceptancetests ]
+    :milestones,
+    :project_memberships,
+    :projects,
+    :stories,
+    :users,
+    :tasks,
+    :acceptancetests ]
     
   class << self
     def test_required_attributes( klass, *attributes )
