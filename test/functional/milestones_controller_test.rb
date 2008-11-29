@@ -42,16 +42,16 @@ class MilestonesControllerTest < Test::Unit::TestCase
   def test_no_project_id
     (FULL_PAGES + NO_RENDERS).each do |a|
       process a
-      assert_redirected_to :controller => 'error', :action => 'index'
+      assert_redirected_to :controller => 'errors', :action => 'index'
       assert_equal "You attempted to access a view that requires a project to " +
-                   "be selected, but no project id was set in your request.",
+                   "be selected",
                    flash[:error]
     end
     POPUPS.each do |a|
       process a
-      assert_redirected_to :controller => 'error', :action => 'popup'
+      assert_redirected_to :controller => 'errors', :action => 'index'
       assert_equal "You attempted to access a view that requires a project to " +
-                   "be selected, but no project id was set in your request.",
+                   "be selected",
                    flash[:error]
     end
   end
@@ -59,18 +59,16 @@ class MilestonesControllerTest < Test::Unit::TestCase
   def test_new
     get :new, 'project_id' => @project_one.id
     assert_response :success
-    assert_template 'new'
+    assert_template '_milestone_form'
     assert_equal @project_one, assigns(:project)
-    assert_kind_of Milestone, assigns(:object)
-    assert assigns(:object).new_record?
   end
 
   def test_create
     before_count = Milestone.count
     post :create, 'project_id' => @project_one.id,
-         'object' => { 'name' => 'Test Create', 'date' => '2005-12-31' }
+         'milestone' => { 'name' => 'Test Create', 'date' => '2005-12-31' }
     assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :redirect_to, project_milestones_path(@project_one.id)
     assert_equal before_count + 1, Milestone.count
   end
 
@@ -78,24 +76,25 @@ class MilestonesControllerTest < Test::Unit::TestCase
     get :edit, 'id' => @future_milestone1.id,
         'project_id' => @future_milestone1.project.id
     assert_response :success
-    assert_template 'edit'
-    assert_equal @future_milestone1, assigns(:object)
+    assert_template '_milestone_form'
+    assert_equal @future_milestone1, assigns(:milestone)
   end
 
   def test_update
     post :update, 'id' => @future_milestone1.id,
          'project_id' => @future_milestone1.project.id,
-         'object' => { 'name' => 'Fooooo!' }
+         'milestone' => { 'name' => 'Fooooo!' }
     assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :call, "location.reload"
     m = Milestone.find(@future_milestone1.id)
     assert_equal 'Fooooo!', m.name
     assert flash[:status]
   end
 
   def test_delete
-    get :delete, 'project_id' => @project_one.id, 'id' => @future_milestone1.id
-    assert_redirected_to :controller => 'milestones', :action => 'index'
+    get :destroy, 'project_id' => @project_one.id, 'id' => @future_milestone1.id
+    assert_rjs :redirect_to, project_milestones_path(1)
+#    assert_redirected_to :controller => 'milestones', :action => 'index'
     assert flash[:status]
     assert_raise(ActiveRecord::RecordNotFound) {
       Milestone.find(@future_milestone1.id)
@@ -106,37 +105,38 @@ class MilestonesControllerTest < Test::Unit::TestCase
     get :show, :id => @future_milestone1.id,
         :project_id => @future_milestone1.project.id
     assert_response :success
-    assert_template 'show'
-    assert_equal @future_milestone1, assigns(:object)
+    assert_template '_show'
+    assert_equal @future_milestone1, assigns(:milestone)
   end
 
-  def test_milestones_calendar_all_projects
-    get :milestones_calendar
-    assert_response :success
-    assert_template '_milestones_calendar'
-    days = empty_milestones_days_array
-    days[0][:milestones] << @future_milestone1
-    days[12][:milestones] << @future_milestone3
-    days[13][:milestones] << @future_milestone4
-    assert_equal days, assigns(:days)
-    assert_equal 'Upcoming Milestones (all projects):',
-                 assigns(:calendar_title)
-    assert_tag :tag => "li", :content =>"Project One: Milestone Seven"
-    assert_tag :tag => "li", :content =>"Project Two: Milestone Eight"
-  end
-
-  def test_milestones_calendar_one_project
-    get :milestones_calendar, 'project_id' => 1
-    assert_response :success
-    assert_template '_milestones_calendar'
-    days = empty_milestones_days_array
-    days[0][:milestones] << @future_milestone1
-    days[12][:milestones] << @future_milestone3
-    assert_equal days, assigns(:days)
-    assert_equal 'Upcoming Milestones:', assigns(:calendar_title)
-    assert_no_tag :tag => "li", :content =>"Project One: Milestone Seven"
-    assert_tag :tag => "li", :content =>"Milestone Seven"
-  end
+# TODO: The 2 following tests don't seem to be relevant anymore.
+#  def test_milestones_calendar_all_projects
+#    get :milestones_calendar
+#    assert_response :success
+#    assert_template '_milestones_calendar'
+#    days = empty_milestones_days_array
+#    days[0][:milestones] << @future_milestone1
+#    days[12][:milestones] << @future_milestone3
+#    days[13][:milestones] << @future_milestone4
+#    assert_equal days, assigns(:days)
+#    assert_equal 'Upcoming Milestones (all projects):',
+#                 assigns(:calendar_title)
+#    assert_tag :tag => "li", :content =>"Project One: Milestone Seven"
+#    assert_tag :tag => "li", :content =>"Project Two: Milestone Eight"
+#  end
+#
+#  def test_milestones_calendar_one_project
+#    get :milestones_calendar, 'project_id' => 1
+#    assert_response :success
+#    assert_template '_milestones_calendar'
+#    days = empty_milestones_days_array
+#    days[0][:milestones] << @future_milestone1
+#    days[12][:milestones] << @future_milestone3
+#    assert_equal days, assigns(:days)
+#    assert_equal 'Upcoming Milestones:', assigns(:calendar_title)
+#    assert_no_tag :tag => "li", :content =>"Project One: Milestone Seven"
+#    assert_tag :tag => "li", :content =>"Milestone Seven"
+#  end
   
   private
 
