@@ -91,7 +91,6 @@ class StoryTest < Test::Unit::TestCase
   end
 
   def test_assign_many_to_project
-    # Happy path
     s1 = stories(:first)
     s2 = stories(:second)
     p1 = s1.project
@@ -104,8 +103,8 @@ class StoryTest < Test::Unit::TestCase
     assert_nil s2.iteration
     assert pos + 1, s1.position
     assert pos + 2, s2.position
-    assert p1.last_story.position < p1.stories.count
-    assert p2.last_story.position < p2.stories.count
+    assert_equal p1.stories.count, p1.last_story.position
+    assert_equal p2.stories.count, p2.last_story.position
   end
   
   def test_owner_set_to_nil_when_iteration_set_to_nil
