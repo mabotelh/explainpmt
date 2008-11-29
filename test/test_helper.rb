@@ -15,6 +15,10 @@ class Test::Unit::TestCase
     url = ActionController::UrlRewriter.new(@request, nil)
     url.rewrite(options)
   end
+
+  def set_referrer(options)
+    @request.env["HTTP_REFERER"] = url_for(options)
+  end
   
   ALL_FIXTURES = [ :iterations,
     :milestones,

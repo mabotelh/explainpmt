@@ -58,13 +58,14 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_delete
-    @request.env["HTTP_REFERER"] = url_for(:controller => 'stories', :action => 'index',
-      :project_id => @project_one.id.to_s)
+    path = {:controller => 'stories', :action => 'index',
+      :project_id => @project_one.id.to_s}
+    set_referrer(path)
     get :destroy, 'id' => @story_one.id, 'project_id' => @project_one.id
-    assert_rjs :redirect_to, :controller => 'stories', :action => 'index',
-      :project_id => @project_one.id.to_s
+    assert_rjs :redirect_to, path
     assert_raise( ActiveRecord::RecordNotFound ) { Story.find @story_one.id }
   end
+
 
   def test_new_single_empty_title
     get :create, :project_id => @project_one.id
@@ -116,7 +117,7 @@ class StoriesControllerTest < Test::Unit::TestCase
 
 
   def test_take_ownership
-    @request.env["HTTP_REFERER"] = url_for(
+    set_referrer(
       :controller => 'iterations',
       :action => 'show',
       :id => @iteration_one.id.to_s,
@@ -133,16 +134,15 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_release_ownership
-    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
-      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
+    path = { :controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }
+    set_referrer(path)
     @story_one.owner = @request.session[ :current_user ]
     @story_one.save
 
     get :release_ownership, 'id' => @story_one.id,
       'project_id' => @project_one.id
-    assert_redirected_to :controller => :iterations, :action => :show,
-      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s
-#    assert flash[ :status ]
+    assert_redirected_to path
     assert_nil Story.find( @story_one.id ).owner
     assert @request.session[ :current_user ].stories.empty?
   end
@@ -160,14 +160,14 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_move_to_iteration
-    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
-      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
+    path = { :controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }
+    set_referrer(path)
 
     # test moving to an iteration
     post :move, 'id' => 1, 'project_id' => 1,
       'selected_stories' => [ 4, 5 ], 'move_to' => 'i|2'
-    assert_redirected_to :controller => 'iterations', :action => 'show',
-      :id => '1', :project_id => '1'
+    assert_redirected_to path
     sc_one = Story.find 4
     assert_equal @iteration_two, sc_one.iteration
     sc_two = Story.find 5
@@ -176,14 +176,14 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_move_to_project
-    @request.env["HTTP_REFERER"] = url_for(:controller => 'iterations', :action => 'show',
-      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s)
+    path = { :controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }
+    set_referrer(path)
 
     # test moving to an iteration
     post :move, 'id' => 1, 'project_id' => 1,
       'selected_stories' => [ 4, 5 ], 'move_to' => 'p|2'
-    assert_redirected_to :controller => 'iterations', :action => 'show',
-      :id => '1', :project_id => '1'
+    assert_redirected_to path
     sc_one = Story.find 4
     assert_equal @project_two, sc_one.project
     sc_two = Story.find 5
