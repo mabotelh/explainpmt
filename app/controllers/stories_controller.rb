@@ -112,7 +112,8 @@ class StoriesController < ApplicationController
     stories = Story.find(params[:selected_stories] || [])
     case destination[0]
       when 'i' then
-        iteration = Iteration.find(destination[1])
+        iteration = nil
+        iteration = Iteration.find(destination[1]) unless destination[1] == 0.to_s
         move_story_to_iteration(iteration, stories)
       when 'p' then
         project = Project.find(destination[1])

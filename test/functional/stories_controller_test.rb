@@ -192,6 +192,18 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_move_to_backlog
-    # test moving to backlog
+    path = { :controller => 'iterations', :action => 'show',
+      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }
+    set_referrer(path)
+
+    # test moving to an iteration
+    post :move, 'id' => 1, 'project_id' => 1,
+      'selected_stories' => [ 4, 5 ], 'move_to' => 'i|0'
+    assert_redirected_to path
+    sc_one = Story.find 4
+    assert_nil sc_one.iteration
+    sc_two = Story.find 5
+    assert_nil sc_two.iteration
+    assert flash[ :status ]
   end
 end
