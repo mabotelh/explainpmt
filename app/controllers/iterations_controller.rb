@@ -15,6 +15,7 @@ class IterationsController < ApplicationController
     end
   end
 
+  # TODO: This method probably can be merged with the index method.
   def show
     @stories = @iteration.stories
     @project_iterations = @project.iterations
@@ -41,7 +42,7 @@ class IterationsController < ApplicationController
     @iteration.project = @project
     render :update do |page|
       if @iteration.save
-        flash[:status] = "New Release \"#{@iteration.name}\" has been created."
+        flash[:status] = "New Iteration \"#{@iteration.name}\" has been created."
         page.redirect_to project_iteration_path(@project, @iteration)
       else
         page[:flash_notice].replace_html :inline => "<%= error_container(@iteration.errors.full_messages[0]) %>"

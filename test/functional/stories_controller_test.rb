@@ -117,16 +117,14 @@ class StoriesControllerTest < Test::Unit::TestCase
 
 
   def test_take_ownership
-    set_referrer(
-      :controller => 'iterations',
+    path = { :controller => 'iterations',
       :action => 'show',
       :id => @iteration_one.id.to_s,
-      :project_id => @project_one.id.to_s
-    )
+      :project_id => @project_one.id.to_s }
+    set_referrer(path)
     
     get :take_ownership, 'id' => @story_one.id, 'project_id' => @project_one.id
-    assert_redirected_to :controller => 'iterations', :action => 'show',
-      :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s
+    assert_redirected_to path
     assert_equal @request.session[ :current_user ],
       Story.find( @story_one.id ).owner
     assert_equal @request.session[ :current_user ].stories,
