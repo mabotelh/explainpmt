@@ -23,9 +23,7 @@ class DashboardsControllerTest < Test::Unit::TestCase
     @request.session[:current_user] = nil
     get :index
     assert_redirected_to :controller => 'users', :action => 'login'
-    assert_equal '/', session[:return_to]
-    assert_equal "Please log in, and we'll send you right along.",
-                 flash[:status]
+    assert_equal '/dashboards', session[:return_to]
   end
 
   def test_index_when_no_projects_exist
@@ -55,12 +53,12 @@ class DashboardsControllerTest < Test::Unit::TestCase
   def test_index_when_regular_user_on_one_project_team
     @request.session[ :current_user ] = @user_two
     get :index
-    assert_redirected_to :controller => 'Dashboards', :action => 'index',
+    assert_redirected_to :controller => 'dashboards', :action => 'show',
       :project_id => @user_two.projects.first.id
   end
 
   def test_index_with_project_id
-    get :index, 'project_id' => '1'
+    get :show, 'project_id' => '1'
     assert_response :success
     assert_template 'project'
     assert_equal Project.find( 1 ), assigns( :project )
