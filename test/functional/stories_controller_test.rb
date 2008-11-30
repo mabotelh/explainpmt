@@ -80,13 +80,19 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_create_many
+    @project_one.stories.delete_all
     num = @project_one.stories.backlog.size
     post :create_many, :project_id => @project_one.id,
       :story => {:titles => "New Story One\nNew Story Two\nNew Story Three"}
-    assert_response :success
-    #assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :call, 'location.reload'
     assert_equal num + 3, @project_one.stories( true ).backlog.size
     assert_equal "New story cards created.", flash[:status]
+
+    @project_one.stories.each do |s|
+      assert_equal Story::Status::New, s.status
+      assert_equal Story::Value::Medium, s.value
+      assert_equal Story::Risk::Normal, s.risk
+    end
   end
   
   def test_create_empty

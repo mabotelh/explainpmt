@@ -213,7 +213,11 @@ class StoriesController < ApplicationController
         page[:flash_notice].replace_html :inline => "<%= error_container('Please enter at least one story card title.') %>"
       else
         params[:story][:titles].each_line do |title|
-          @project.stories.create(:title => title, :creator_id => current_user.id)
+          @project.stories.create(:title => title, 
+                                  :creator_id => current_user.id,
+                                  :risk => Story::Risk::Normal,
+                                  :value => Story::Value::Medium
+                                )
         end
         flash[:status] = 'New story cards created.'
         page.call 'location.reload'
