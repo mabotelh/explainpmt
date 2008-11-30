@@ -19,7 +19,13 @@ class Test::Unit::TestCase
   def set_referrer(options)
     @request.env["HTTP_REFERER"] = my_url_for(options)
   end
-  
+
+  def assert_paginator(paginator, expected)
+    paginator.each do |p|
+      assert expected.include?(p)
+    end
+  end
+
   ALL_FIXTURES = [ :iterations,
     :milestones,
     :project_memberships,

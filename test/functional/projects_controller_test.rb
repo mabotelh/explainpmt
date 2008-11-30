@@ -140,7 +140,15 @@ class ProjectsControllerTest < Test::Unit::TestCase
     assert assigns( :projects ).include?( @project_two )
     assert !assigns( :projects ).include?( @project_three )
   end
-  
+
+  def test_team
+    @request.session[ :current_user ] = @admin
+    get :team, 'id' => @project_one.id
+    assert_template 'team'
+    assert_paginator (assigns( :users ), @project_one.users)
+    assert_equal @project_one, assigns( :project )
+  end
+
   private
 
   def current_user
