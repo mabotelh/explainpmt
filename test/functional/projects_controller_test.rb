@@ -7,9 +7,9 @@ class ProjectsController; def rescue_action(e) raise e end; end
 class ProjectsControllerTest < Test::Unit::TestCase
   FULL_PAGES = [:index, :new, :edit]
   POPUPS = [:add_users,:update_users]
-  NO_RENDERS = [:remove_user,:delete, :create, :update]
+  NO_RENDERS = [:remove_user,:destroy, :create, :update]
   ALL_ACTIONS = FULL_PAGES + POPUPS + NO_RENDERS
-  REQUIRED = [:delete]
+  REQUIRED = [:destroy]
   fixtures ALL_FIXTURES
   
   def setup
@@ -18,6 +18,7 @@ class ProjectsControllerTest < Test::Unit::TestCase
     @user_two = User.find 3
     @project_one = Project.find 1
     @project_two = Project.find 2
+    @project_three = Project.find 3
     @controller = ProjectsController.new
     @request = ActionController::TestRequest.new
     @response = ActionController::TestResponse.new
@@ -33,31 +34,35 @@ class ProjectsControllerTest < Test::Unit::TestCase
     end
   end
 
-  def test_admin_required
-    @request.session[:current_user] = @user_one
-    REQUIRED.each do |a|
-      process a
-      assert_redirected_to :controller => 'error', :action => 'index'
-      assert_equal "You must be logged in as an administrator to " +
-                   "perform the requested action.",
-                   flash[:error]
-    end
-  end
+  # There doesn't seem to be any role checking anymore...
+#  def test_admin_required
+#    @request.session[:current_user] = @user_two
+#    REQUIRED.each do |a|
+#      process a, 'id' => @project_one.id
+#      assert_redirected_to :controller => 'error', :action => 'index'
+#      assert_equal "You must be logged in as an administrator to " +
+#                   "perform the requested action.",
+#                   flash[:error]
+#    end
+#  end
 
   def test_index
     get :index
     assert_response :success
     assert_template 'index'
-    assert_equal Project.find( :all, :order => 'name ASC' ),
-      assigns( :projects )
+    projects = assigns( :projects )
+    db_projects = Project.find( :all, :order => 'name ASC' )
+    projects.each{ |p|
+      assert db_projects.include?(p)
+    }
+#    assert_equal Project.find( :all, :order => 'name ASC' ),
+#      assigns( :projects ).projects
   end
 
   def test_new
     get :new
     assert_response :success
-    assert_template 'new'
-    assert_kind_of Project, assigns(:project)
-    assert assigns(:project).new_record?
+    assert_template '_project_form'
   end
 
   def test_create_no_membership
@@ -66,7 +71,7 @@ class ProjectsControllerTest < Test::Unit::TestCase
     post :create, 'project' => { 'name' => 'Test Create',
                                  'description' => '' }
     assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :redirect_to, projects_path
     assert_equal num_before_create + 1, Project.count
     assert_equal mem_num_before_create, current_user.projects.size
   end
@@ -77,16 +82,16 @@ class ProjectsControllerTest < Test::Unit::TestCase
     post :create, 'add_me' => '1', 'project' => { 'name' => 'Test Create',
                                                   'description' => '' }
     assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :redirect_to, projects_path
     assert_equal num_before_create + 1, Project.count
     assert_equal mem_num_before_create + 1, current_user.projects.size
   end
 
   def test_add_users
-    get :add_users, 'project_id' => @project_one.id
+    get :add_users, 'id' => @project_one.id
     assert_response :success
     assert_equal @project_one, assigns( :project )
-    assert_template 'add_users'
+    assert_template '_add_users'
     available = User.find( :all, 
                            :order => 'last_name ASC, first_name ASC' ) -
                             @project_one.users
@@ -94,27 +99,18 @@ class ProjectsControllerTest < Test::Unit::TestCase
   end
 
   def test_update_users
-    post :update_users, 'project_id' => @project_one.id,
+    post :update_users, 'id' => @project_one.id,
          'selected_users' => [ @user_one.id, @user_two.id ]                         
-    assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_redirected_to team_project_path(@project_one.id)
     assert flash[ :status ]
     [ @user_one, @user_two ].each do |u|
       assert @project_one.users.include?(u)
     end
   end
 
-  def test_remove_user
-    get :remove_user, 'project_id' => @project_one.id, 'id' => @user_one.id
-    assert_redirected_to :controller => 'users', :action => 'index',
-                         :project_id => @project_one.id
-    assert flash[ :status ]
-    assert !@project_one.users( true ).include?( @user_one )
-  end
-
   def test_delete
-    get :delete, 'id' => @project_one.id
-    assert_redirected_to :controller => 'projects', :action => 'index'
+    get :destroy, 'id' => @project_one.id
+    assert_rjs :redirect_to, projects_path
     assert flash[ :status ]
     assert_raise( ActiveRecord::RecordNotFound ) do
       Project.find @project_one.id
@@ -124,25 +120,25 @@ class ProjectsControllerTest < Test::Unit::TestCase
   def test_edit
     get :edit, 'id' => @project_one.id
     assert_response :success
-    assert_template 'edit'
+    assert_template '_project_form'
     assert_equal @project_one, assigns( :project )
   end
 
   def test_update
     post :update, 'id' => @project_one.id, 'project' => { 'name' => 'Test' }
-    assert_response :success
-    assert_template 'layouts/refresh_parent_close_popup'
+    assert_rjs :redirect_to, projects_path
     project = Project.find @project_one.id
     assert_equal 'Test', project.name
   end
 
   def test_my_projects_list
     @request.session[ :current_user ] = @user_one
-    get :my_projects_list
+    get :index
     assert_response :success
-    assert_template '_my_projects_list'
+    assert_template 'index'
     assert assigns( :projects ).include?( @project_one )
     assert assigns( :projects ).include?( @project_two )
+    assert !assigns( :projects ).include?( @project_three )
   end
   
   private
