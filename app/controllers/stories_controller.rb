@@ -162,6 +162,31 @@ class StoriesController < ApplicationController
     end
   end
 
+  def core_update(story, success_message)#, failure_message)
+    story.updater_id = current_user.id
+    render :update do |page|
+      if story.valid?
+        story.audit_story
+        story.save
+        flash[:status] = success_message
+        page.call 'location.reload'
+      else
+        # The below will work, once there's a status message div in the layout
+        #page[:flash_notice].replace_html :inline => failure_message
+        logger.debug(story.errors.full_messages.join("\n"))
+        flash[:error] = story.errors.full_messages.join("\n")
+        page.call 'location.reload'
+      end
+    end
+
+  end
+
+  def set_story_points
+    @story.points=params[:value]
+    core_update(@story, "SC#{@story.scid}'s estimate set to #{@story.points}.")
+    logger.debug("story.points: " + @story.points.to_s)
+  end
+
   def set_numeric_priority
     new_pos = params[:value]
     render :update do |page|

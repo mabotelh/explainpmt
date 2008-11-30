@@ -115,10 +115,23 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def test_update
+    title = 'Test Update'
     post :update, 'project_id' => @project_one.id, 'id' => @story_one.id,
-      'story' => { 'title' => 'Test Update', 'status' => 1 }
+      'story' => { 'title' => title, 'status' => 1 }
     assert flash[ :status ]
     assert_rjs :call, 'location.reload'
+    @story_one.reload
+    assert_equal title, @story_one.title
+  end
+
+  def test_update_invalid
+    title = @story_one.title
+    post :update, 'project_id' => @project_one.id, 'id' => @story_one.id,
+      'story' => { 'title' => "", 'status' => 1 }
+# TODO: Can't make this work.
+#    assert_rjs :page, "flash_notice", "update"
+    @story_one.reload
+    assert_equal title, @story_one.title
   end
 
 
@@ -209,5 +222,31 @@ class StoriesControllerTest < Test::Unit::TestCase
     sc_two = Story.find 5
     assert_nil sc_two.iteration
     assert flash[ :status ]
+  end
+
+  def test_set_points
+    @story_one.points = 1
+    @story_one.save
+    make_set_points_ajax_request(@story_one, 3)
+    @story_one.reload
+    assert_equal 3, @story_one.points
+    assert_rjs :call, 'location.reload'
+  end
+
+  def test_set_points_invalid
+    @story_one.points = 1
+    @story_one.save
+    make_set_points_ajax_request(@story_one, -5)
+    @story_one.reload
+    assert_equal 1, @story_one.points
+    assert_rjs :call, 'location.reload'
+    assert flash[ :error ]
+  end
+
+  def make_set_points_ajax_request(story, points)
+    xhr :post, "set_story_points",
+      { :project_id => story.project,
+        :id => story,
+        :value => points}
   end
 end
