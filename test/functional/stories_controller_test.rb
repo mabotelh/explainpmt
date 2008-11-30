@@ -62,7 +62,7 @@ class StoriesControllerTest < Test::Unit::TestCase
       :project_id => @project_one.id.to_s}
     set_referrer(path)
     get :destroy, 'id' => @story_one.id, 'project_id' => @project_one.id
-    assert_rjs :redirect_to, path
+    assert_rjs :redirect_to, my_url_for(path)
     assert_raise( ActiveRecord::RecordNotFound ) { Story.find @story_one.id }
   end
 
