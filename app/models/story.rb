@@ -144,8 +144,8 @@ class Story < ActiveRecord::Base
       audit.audited_object_id = self.id
       audit.object = "Story"
       audit.project_id = self.project_id
-      audit.user = User.find(self.updater_id).full_name
-       self.attributes.each do |key, value|
+      audit.user = User.find(self.updater_id).full_name if self.updater_id
+      self.attributes.each do |key, value|
         if story.attributes[key] != value && key != "updater_id"
             audit.before = "" unless audit.before
             audit.after = "" unless audit.after
@@ -260,6 +260,7 @@ class Story < ActiveRecord::Base
   def before_save
     self.owner = nil if self.iteration.nil?
     before_save_reset_status
+    audit_story
   end
 
   private

@@ -60,7 +60,6 @@ class StoriesController < ApplicationController
     @story.updater_id = current_user.id
     render :update do |page|
       if @story.valid?
-        @story.audit_story
         @story.save
         flash[:status] = 'The changes to the story card have been saved.'
         page.call 'location.reload'
@@ -166,7 +165,6 @@ class StoriesController < ApplicationController
     story.updater_id = current_user.id
     render :update do |page|
       if story.valid?
-        story.audit_story
         story.save
         flash[:status] = success_message
         page.call 'location.reload'

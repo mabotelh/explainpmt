@@ -220,6 +220,28 @@ class StoryTest < Test::Unit::TestCase
       assert_not_nil story.errors[:points]
     end
   end
+
+  def test_auditing_on_change
+    @story_one.title = "Hello World"
+    @story_one.save
+    a = Audit.find(:all, :conditions => {:object => 'Story', :audited_object_id => @story_one.id})
+    assert !a.empty?
+  end
+
+  def test_auditing_on_change_invalid_story
+    @story_one.title = "Hello World"
+    @story_one.points = -1
+    @story_one.save
+    a = Audit.find(:all, :conditions => {:object => 'Story', :audited_object_id => @story_one.id})
+    assert a.empty?
+  end
+
+  def test_auditing_on_create
+    s = Story.new({:points => 1, :project_id => 1, :risk => Story::Risk::Low, :status => Story::Status::New, :title => "New Story"})
+    s.save
+    a = Audit.find(:all, :conditions => {:object => 'Story', :audited_object_id => @story_one.id})
+    assert a.empty?
+  end
 end
 
 class StoryValueTest < Test::Unit::TestCase
