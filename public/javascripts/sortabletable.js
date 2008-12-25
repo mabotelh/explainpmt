@@ -352,6 +352,7 @@ SortableTable.getInnerText = function (oNode) {
 	var cs = oNode.childNodes;
 	var l = cs.length;
 	for (var i = 0; i < l; i++) {
+		if (s != "") return s;
 		switch (cs[i].nodeType) {
 			case 1: //ELEMENT_NODE
 				s += SortableTable.getInnerText(cs[i]);
