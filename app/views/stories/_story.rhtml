@@ -17,9 +17,25 @@
   <td><%= story.release_id? ? link_to_release(story.release) : "Not Assigned" %></td>
   <%end%>
   <td><%= in_place_editor_field(:story, :points, {}, {:url => set_story_points_project_story_path(story.project, story), :size => 2, :script => true}) %></td>
-  <td><%= story.value.name %></td>
-  <td><%= story.risk.name %></td>
-  <td><%= story.status.name %></td>
+  <td>
+    <%= in_place_collection_editor_field :story, :value,
+                           Story::Values.collect{|x| [x.name,x.order]},
+                           {:url => set_story_value_project_story_path(story.project, story), :script => true} %>
+    <%#= in_place_select_editor_field(:story, :value, {}, {:select_options => options_from_collection_for_select(Story::Values, "order", "name", selected = story.value.order)}) %> <%#= story.value.name %>
+  </td>
+  <td>
+    <%= in_place_collection_editor_field :story, :risk,
+                           Story::Risks.collect{|x| [x.name,x.order]},
+                           {:url => set_story_risk_project_story_path(story.project, story), :script => true} %>
+
+<%#= story.risk.name %>
+  </td>
+  <td>
+    <%= in_place_collection_editor_field :story, :status,
+                           Story::Statuses.collect{|x| [x.name,x.order]},
+                           {:url => set_story_status_project_story_path(story.project, story), :script => true} %>
+<%#= story.status.name %>
+  </td>
   <% unless hide_cols.include?( :owner ) %>
     <td>
       <%if story.owner%>
@@ -37,6 +53,15 @@
   <td><%= in_place_editor_field(:story, :position, {}, {:url => set_numeric_priority_project_story_path(story.project, story), :method => :put, :size => 2}) %></td>
   <% column_content_for(hide_cols, :action) do %>
     <td class="actions">
+ <!-- -->
+      <%= link_to_edit_story(story, :value => image_tag("edit.png", {:alt=>"Edit", :title=>"Edit"})) %>
+      <%= link_to_clone_story(story, :value => image_tag("clone.png", {:alt=>"Clone", :title=>"Clone"})) %>
+      <%= link_to_move_up_story(story, :value => image_tag("move_up.png", {:alt=>"Move Up", :title=>"Move Up"})) %>
+      <%= link_to_move_down_story(story, :value => image_tag("move_down.png", {:alt=>"Move Down", :title=>"Move Down"})) %>
+      <%= link_to_audit_story(story, :value => image_tag("history.png", {:alt=>"View History", :title=>"View History"})) %>
+      <%= link_to_delete_story(story, :value => image_tag("delete.png", {:alt=>"Delete", :title=>"Delete"})) %>
+ <!-- -->
+ <!--
       <select onchange="take_action(this);">
         <option value="" selected="selected">&nbsp;</option>
         <%=option_to_edit_story(story)%>
@@ -46,6 +71,7 @@
         <%=option_to_move_story_up(story)%>
         <%=option_to_move_story_down(story)%>
       </select>
+ -->
    </td>
   <%end%>
 </tr>

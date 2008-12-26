@@ -58,8 +58,24 @@ module StoriesHelper
     link_to_remote(options[:value] || story.title, :url => edit_project_story_path(@project, story), :method => :get)
   end
 
-  def link_to_audit_story(story)
-    link_to_remote("View History", :url => audit_project_story_path(@project, story), :method => :get)
+  def link_to_clone_story(story, options={})
+    link_to_remote(options[:value] || story.title, :url => clone_story_project_story_path(@project, story), :method => :put)
+  end
+
+  def link_to_delete_story(story, options={})
+    link_to_remote(options[:value] || story.title, :url => project_story_path(@project, story), :method => :delete, :confirm => 'Are you sure you want to delete? All associated data will also be deleted. This action can not be undone.')
+  end
+
+  def link_to_audit_story(story, options={})
+    link_to_remote(options[:value] || "View History", :url => audit_project_story_path(@project, story), :method => :get)
+  end
+
+  def link_to_move_up_story(story, options={})
+    link_to_remote(options[:value] || "View History", :url => move_up_project_story_path(@project, story), :method => :put)
+  end
+
+  def link_to_move_down_story(story, options={})
+    link_to_remote(options[:value] || "View History", :url => move_down_project_story_path(@project, story), :method => :put)
   end
 
   def option_to_edit_story(story)

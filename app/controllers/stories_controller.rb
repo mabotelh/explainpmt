@@ -185,6 +185,24 @@ class StoriesController < ApplicationController
     logger.debug("story.points: " + @story.points.to_s)
   end
 
+  def set_story_value
+    @story.value=Story::Value.new(params[:value].to_i)
+    core_update(@story, "SC#{@story.scid}'s value set to #{@story.value.name}.")
+    logger.debug("story.value: " + @story.value.name.to_s)
+  end
+
+  def set_story_risk
+    @story.risk=Story::Risk.new(params[:value].to_i)
+    core_update(@story, "SC#{@story.scid}'s risk set to #{@story.risk.to_s}.")
+    logger.debug("story.risk: " + @story.risk.to_s)
+  end
+
+  def set_story_status
+    @story.status=Story::Status.new(params[:value].to_i)
+    core_update(@story, "SC#{@story.scid}'s status set to #{@story.status.to_s}.")
+    logger.debug("story.status: " + @story.status.to_s)
+  end
+
   def set_numeric_priority
     new_pos = params[:value]
     render :update do |page|
