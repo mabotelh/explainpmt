@@ -831,14 +831,14 @@ Ajax.InPlaceCollectionEditor = Class.create(Ajax.InPlaceEditor, {
     });
     var marker = ('value' in this.options) ? this.options.value : this._text;
     var textFound = this._collection.any(function(entry) {
-      return entry[0] == marker;
+      return entry[1] == marker;
     }.bind(this));
     this._controls.editor.update('');
     var option;
     this._collection.each(function(entry, index) {
       option = document.createElement('option');
       option.value = entry[0];
-      option.selected = textFound ? entry[0] == marker : 0 == index;
+      option.selected = textFound ? entry[1] == marker : 0 == index;
       option.appendChild(document.createTextNode(entry[1]));
       this._controls.editor.appendChild(option);
     }.bind(this));
