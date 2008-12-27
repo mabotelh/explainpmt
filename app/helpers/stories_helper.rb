@@ -6,6 +6,7 @@ module StoriesHelper
   def link_to_show_cancelled
     link_to_unless_current 'Show Cancelled', cancelled_project_stories_path(@project)
   end
+
   def link_to_show_all
     link_to_unless_current 'Show All', all_project_stories_path(@project)
   end
@@ -71,11 +72,11 @@ module StoriesHelper
   end
 
   def link_to_move_up_story(story, options={})
-    link_to_remote(options[:value] || "View History", :url => move_up_project_story_path(@project, story), :method => :put)
+    link_to_remote(options[:value] || "Move Up", :url => move_up_project_story_path(@project, story), :method => :put)
   end
 
   def link_to_move_down_story(story, options={})
-    link_to_remote(options[:value] || "View History", :url => move_down_project_story_path(@project, story), :method => :put)
+    link_to_remote(options[:value] || "Move Down", :url => move_down_project_story_path(@project, story), :method => :put)
   end
 
   def option_to_edit_story(story)
@@ -105,4 +106,47 @@ module StoriesHelper
   def option_to_audit_story(story)
     create_action_option("View History", audit_project_story_path(@project, story))
   end
+
+  def value_in_place_editor(story)
+    in_place_collection_editor_field(
+      :story,
+      :value,
+      Story::Values.collect{|x| [x.name,x.order]},
+      {:url => set_value_project_story_path(story.project, story), :script => true})
+  end
+
+  def risk_in_place_editor(story)
+    in_place_collection_editor_field(
+      :story,
+      :risk,
+      Story::Risks.collect{|x| [x.name,x.order]},
+      {:url => set_risk_project_story_path(story.project, story), :script => true})
+  end
+
+  def status_in_place_editor(story)
+    in_place_collection_editor_field(
+      :story,
+      :status,
+      Story::Statuses.collect{|x| [x.name,x.order]},
+      {:url => set_status_project_story_path(story.project, story), :script => true})
+  end
+
+  def points_in_place_editor(story)
+    in_place_editor_field(
+      :story,
+      :points,
+      {},
+      {:url => set_points_project_story_path(story.project, story), :size => 2, :script => true}
+    )
+  end
+
+  def customer_in_place_editor(story)
+    in_place_editor_field(
+      :story,
+      :customer,
+      {},
+      {:url => set_customer_project_story_path(story.project, story), :script => true}
+    )
+  end
+
 end

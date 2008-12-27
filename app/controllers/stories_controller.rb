@@ -179,25 +179,31 @@ class StoriesController < ApplicationController
 
   end
 
-  def set_story_points
+  def set_points
     @story.points=params[:value]
     core_update(@story, "SC#{@story.scid}'s estimate set to #{@story.points}.")
     logger.debug("story.points: " + @story.points.to_s)
   end
 
-  def set_story_value
+  def set_customer
+    @story.customer = params[:value]
+    core_update(@story, "SC#{@story.scid}'s customer set to #{@story.customer}.")
+    logger.debug("story.customer: " + @story.customer)
+  end
+
+  def set_value
     @story.value=Story::Value.new(params[:value].to_i)
     core_update(@story, "SC#{@story.scid}'s value set to #{@story.value.name}.")
     logger.debug("story.value: " + @story.value.name.to_s)
   end
 
-  def set_story_risk
+  def set_risk
     @story.risk=Story::Risk.new(params[:value].to_i)
     core_update(@story, "SC#{@story.scid}'s risk set to #{@story.risk.to_s}.")
     logger.debug("story.risk: " + @story.risk.to_s)
   end
 
-  def set_story_status
+  def set_status
     @story.status=Story::Status.new(params[:value].to_i)
     core_update(@story, "SC#{@story.scid}'s status set to #{@story.status.to_s}.")
     logger.debug("story.status: " + @story.status.to_s)

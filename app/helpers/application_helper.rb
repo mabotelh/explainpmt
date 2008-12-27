@@ -99,20 +99,23 @@ module ApplicationHelper
     qParams = options.to_a.collect!{|k,v| "#{k}=#{v}"}.join("&")
     content_tag("option", text, :value => "#{href}?#{qParams}")
   end
-  
+
   def in_place_collection_editor_field(object,method,container, tag_options={})
     tag = ::ActionView::Helpers::InstanceTag.new(object, method, self)
     tag_options = { :tag => "span",
       :id => "#{object}_#{method}_#{tag.object.id}_in_place_editor",
       :class => "in_place_editor_field" }.merge!(tag_options)
-    url = url_for( :action => "set_#{object}_#{method}", :id => tag.object.id )
+    url = tag_options[:url] || url_for( :action => "set_#{object}_#{method}", :id => tag.object.id )
+    logger.debug("url: " + url.to_s)
     collection = container.inject([]) do |options, element|
-      options << "[ '#{escape_javascript(element.last.to_s)}', '#{escape_javascript(element.first.to_s)}']"
+      options << "['#{escape_javascript(element.last.to_s)}','#{escape_javascript(element.first.to_s)}']"
     end
     function =  "new Ajax.InPlaceCollectionEditor("
     function << "'#{object}_#{method}_#{tag.object.id}_in_place_editor',"
     function << "'#{url}',"
-    function << "{collection: [#{collection.join(',')}], id: '#{object}_#{method}'});"
+    function << "{collection: [#{collection.join(',')}]});"
+#    function << "{collection: [#{collection.join(',')}], id: '#{object}_#{method}'});"
     tag.to_content_tag(tag_options.delete(:tag), tag_options) + javascript_tag(function)
+    #logger.debug("crap... " + object.attributes[method])
   end
 end
