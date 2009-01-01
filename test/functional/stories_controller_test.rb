@@ -244,7 +244,7 @@ class StoriesControllerTest < Test::Unit::TestCase
   end
 
   def make_set_points_ajax_request(story, points)
-    xhr :post, "set_story_points",
+    xhr :post, "set_points",
       { :project_id => story.project,
         :id => story,
         :value => points}

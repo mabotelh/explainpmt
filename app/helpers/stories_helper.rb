@@ -132,21 +132,27 @@ module StoriesHelper
   end
 
   def points_in_place_editor(story)
-    in_place_editor_field(
-      :story,
-      :points,
-      {},
-      {:url => set_points_project_story_path(story.project, story), :size => 2, :script => true}
-    )
+    rv = "<span id='story_points_ipe_#{story.id}'>#{story.points}</span>"
+    rv + "<script type='text/javascript'>
+//<![CDATA[
+new Ajax.InPlaceEditorWithEmptyText('story_points_ipe_#{story.id}', '#{set_points_project_story_path(story.project, story)}', {size:2,emptyText:'Not Set'})
+//]]>
+</script>"
   end
 
   def customer_in_place_editor(story)
-    in_place_editor_field(
-      :story,
-      :customer,
-      {},
-      {:url => set_customer_project_story_path(story.project, story), :script => true}
-    )
+    rv = "<span id='story_customer_ipe_#{story.id}'>#{story.customer}</span>"
+    rv + "<script type='text/javascript'>
+//<![CDATA[
+new Ajax.InPlaceEditorWithEmptyText('story_customer_ipe_#{story.id}', '#{set_customer_project_story_path(story.project, story)}', {emptyText:'Not Set'})
+//]]>
+</script>"
+#    in_place_editor_field(
+#      :story,
+#      :customer,
+#      {},
+#      {:url => set_customer_project_story_path(story.project, story), :script => true}
+#    )
   end
 
 end
