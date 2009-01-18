@@ -248,12 +248,12 @@ class Story < ActiveRecord::Base
   end
 
   def before_create
-#    if last_story = project.stories.find( :first, :order => 'scid DESC' )
-#      self.scid = last_story.scid + 1
-#    else
-#      self.scid = 1
-#    end
-    self.scid = project.next_position
+    if last_story = project.stories.find( :first, :order => 'scid DESC' )
+      self.scid = last_story.scid + 1
+    else
+      self.scid = 1
+    end
+#    self.scid = project.next_position
   end
 
 
