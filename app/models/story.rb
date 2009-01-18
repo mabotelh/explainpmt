@@ -253,7 +253,6 @@ class Story < ActiveRecord::Base
     else
       self.scid = 1
     end
-#    self.scid = project.next_position
   end
 
 

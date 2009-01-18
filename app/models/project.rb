@@ -142,5 +142,10 @@ class Project < ActiveRecord::Base
     User.find( :all, :order => 'last_name ASC, first_name ASC' ) - self.users
   end
 
+  def next_position
+#    ls = last_story
+#    pos = ls ? ls.scid + 1 : 1
+    stories.last ? stories.last.position + 1 : 1
+  end
 end
 
