@@ -147,7 +147,8 @@ div.milestone_list { margin: 10px; }
 /* end login page */
 
 
-#SystemError, #SystemStatus { position: relative; border-top: 1px solid #f00; border-bottom: 1px solid #f00; padding: 3px 2em; margin: 0 0 10px; color: #900; background: #fcc; }
+#SystemMessages {float: left; width: 100%; margin-top: 10px; margin-bottom: 10px}
+#SystemError, #SystemStatus { position: relative; border-top: 1px solid #f00; border-bottom: 1px solid #f00; color: #900; background: #fcc; float: left; width: 100%;}
 #SystemStatus { border-top-color: #0f0; border-bottom-color: #0f0; color: #060; background: #cfc; }
 #ProjectsList li { margin: 0 0 5px 10px; }
 
