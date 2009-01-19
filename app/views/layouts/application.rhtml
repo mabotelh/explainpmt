@@ -70,26 +70,20 @@ PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 			<div class="clear"></div>
     </div>
 
-    <table id="Main" width="100%">
+    <div id="SystemMessages">
       <% if flash[:error] %>
-        <tr>
-          <td colspan="2" id="SystemError">
+          <span id="SystemError">
             <%= textilize_without_paragraph( flash[ :error ] ) %>
-          </td>
-        </tr>
+          </span>
       <% end %>
       <% if flash[:status] %>
-        <tr>
-          <td colspan="2" id="SystemStatus">
+          <span id="SystemStatus">
             <%= textilize_without_paragraph( flash[ :status ] ) %>
-          </td>
-        </tr>
+          </span>
       <% end %>
-			<tr>
-      	<%= yield %>
-			</tr>
+    </div>
 
-    </table>
+    <%= yield %>
 
     <div id="Footer">
       <p><strong><a href="http://code.google.com/p/explainpmt/issues/list" title="Issues? Requests? Submit them here" target="_blank">eXPlain Project Management Tool</a></strong> - <%= ApplicationHelper::VERSION %> (<a href="/user_guide.doc">User Guide</a>)</p>
