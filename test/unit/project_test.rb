@@ -145,6 +145,19 @@ class ProjectTest < Test::Unit::TestCase
     assert_equal 2, p.next_position
   end
 
+  def test_next_scid_empty_project
+    p = projects(:second)
+    assert_equal 1, p.next_scid
+  end
+
+  def test_next_position_project_not_empty
+    p = projects(:second)
+    story = p.stories.create :title => 'A Story Card'
+    story.scid = 4
+    story.save
+    assert_equal 5, p.next_scid
+  end
+
 #  def test_next_position_story_deleted_in_the_middle
 #
 #  end
