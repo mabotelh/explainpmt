@@ -21,7 +21,7 @@ map.resources :projects, :member => {:xml_export => :get, :audits => :get, :team
   end
   project.resources :milestones, :collection => {:show_all => :get, :show_recent => :get}
   project.resources :iterations,
-    :member => {:allocation => :get, :select_stories => :get, :assign_stories => :post, :export => :get, :export_tasks => :get},
+    :member => {:task_board => :get, :allocation => :get, :select_stories => :get, :assign_stories => :post, :export => :get, :export_tasks => :get},
     :collection => {:move_stories => :post} do |iteration|
     iteration.resources :stories
   end

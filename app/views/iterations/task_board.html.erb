@@ -1,0 +1,33 @@
+<div id="contentwrapper">
+  <div id="contentcolumn">
+    <% empty_collection_content(@stories) do%>
+      <p>No stories have been assigned to this iteration.</p>
+    <% end %>
+    
+    <table width="100%">
+      <thead>
+        <tr>
+          <td width="25%">Story</td>
+          <td width="25%">To Do</td>
+          <td width="25%">In Progress</td>
+          <td width="25%">Done</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="3">story.title</td>
+          <td rowspan="3">ToDo 1</td>
+          <td>In Progress 1</td>
+          <td>Done 1</td>
+        </tr>
+        <tr>
+          <td rowspan="2">In Progress 2</td>
+          <td>Done 2</td>
+        </tr>
+        <tr>
+          <td>Done 3</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

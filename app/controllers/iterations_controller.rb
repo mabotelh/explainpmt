@@ -29,6 +29,10 @@ class IterationsController < ApplicationController
     end
   end
 
+  def task_board
+    @stories = @iteration.stories
+  end
+  
   def new
     common_popup(project_iterations_path(@project))
   end
