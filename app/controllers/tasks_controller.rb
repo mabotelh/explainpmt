@@ -7,12 +7,14 @@ class TasksController < ApplicationController
   end
 
   def edit
+    @task.return_ids_for_aggregations
     common_popup(project_story_task_path(@project, @task.story, @task))
   end
 
   def create
     @task = Task.new params[:task]
     @task.story = Story.find(params[:story_id])
+    modify_status_params
     render :update do |page|
       if @task.save
         flash[:status] = "New Task \"#{@task.name}\" has been created."
@@ -24,6 +26,7 @@ class TasksController < ApplicationController
   end
 
   def update
+    modify_status_params
     render :update do |page|
       if @task.update_attributes(params[:task])
         flash[:status] = "Task \"#{@task.name}\" has been updated."
@@ -73,6 +76,15 @@ class TasksController < ApplicationController
   def common_popup(url)
     render :update do |page|
       page.call 'showPopup', render(:partial => 'story_task_form', :locals => {:url => url})
+    end
+  end
+
+  def modify_status_params
+    if params[:task]
+      if params[:task][:status]
+        params[:task][:status] =
+          Task::Status.new(params[:task][:status].to_i)
+      end
     end
   end
 

@@ -5,7 +5,7 @@ class Task < ActiveRecord::Base
   validates_uniqueness_of :name, :scope => :story_id
   Statuses = []
 
-  composed_of :status, :mapping => %w(status order), :class_name => 'Story::Status'
+  composed_of :status, :mapping => %w(status order), :class_name => 'Task::Status'
 
   class Status < Story::RankedValue
     class << self
@@ -28,6 +28,18 @@ class Task < ActiveRecord::Base
   def release_ownership
     self.owner = nil
     save
+  end
+
+  def after_initialize
+    self.status = Status::New unless self.status
+  end
+  
+  def return_ids_for_aggregations
+    self.instance_eval <<-EOF
+      def status
+        read_attribute('status')
+      end
+    EOF
   end
 
 end

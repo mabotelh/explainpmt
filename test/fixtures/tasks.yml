@@ -4,12 +4,14 @@ first:
   name: 'First Task'
   description: 'First Task Description'
   story_id: 1
-  complete: false
+#  complete: false
+  status: 1
   user_id: 1
 second:
   id: 2
   name: 'Second Task'
   description: 'Second Task Description'
-  complete: true
+#  complete: true
+  status: 4
   user_id: 1
   

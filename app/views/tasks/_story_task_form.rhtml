@@ -8,10 +8,10 @@
     <%= f.text_area(:description, :rows => 3) %>
     <label>Owner</label>
     <%= f.select :user_id, @project.users.collect {|u| [ u.full_name, u.id ] }, {:include_blank => true}%>
-    <label>Complete</label>
-    <%= f.radio_button :complete, true %>
-    <label>Not Complete</label>
-    <%= f.radio_button :complete, false %>
+	  <fieldset>
+	    <label>Status</label>
+	    <%= collection_select('task', 'status', Task::Statuses, 'order', 'name') %>
+	  </fieldset>
     <div class="submit">
       <%=submit_tag @task ? "Update" : "Create" %>
     </div>
