@@ -132,7 +132,7 @@ div.milestone_list { margin: 10px; }
 #login .btn { vertical-align: middle; padding: 3px; }
 /* end login page */
 
-
+#SystemMessages {display: none}
 #SystemError, #SystemStatus { position: relative; border-top: 1px solid #f00; border-bottom: 1px solid #f00; padding: 3px 2em; margin: 0 0 10px; color: #900; background: #fcc; }
 #SystemStatus { border-top-color: #0f0; border-bottom-color: #0f0; color: #060; background: #cfc; }
 #ProjectsList li { margin: 0 0 5px 10px; }

@@ -66,6 +66,20 @@ p { margin: 0.5em 0 1em; }
 /** end main wrapper **/
 
 
+/** content wrapper **/
+#contentwrapper{float: left; width: 100%;}
+/** end content wrapper **/
+
+
+/** left column **/
+#leftcolumn { border-right: 1px solid black; background: #fff; width:160px; float: left; margin-left: -100%; padding: 10px; }
+#leftcolumn h2 { padding-bottom: 5px; }
+/** end of left column **/
+
+
+/** main content **/
+#contentcolumn {border-left: 1px solid black; margin-left: 180px; padding: 10px}
+
 /** user card **/
 div.contact_card { float: left; margin: 2px; padding: 3px; width: 17em; border: 1px solid #ccc; }
 div.contact_card h3 { margin: 0 0 5px; font-weight: bold; background: #ff9; }
@@ -133,7 +147,8 @@ div.milestone_list { margin: 10px; }
 /* end login page */
 
 
-#SystemError, #SystemStatus { position: relative; border-top: 1px solid #f00; border-bottom: 1px solid #f00; padding: 3px 2em; margin: 0 0 10px; color: #900; background: #fcc; }
+#SystemMessages {float: left; width: 100%; margin-top: 10px; margin-bottom: 10px}
+#SystemError, #SystemStatus { position: relative; border-top: 1px solid #f00; border-bottom: 1px solid #f00; color: #900; background: #fcc; float: left; width: 100%;}
 #SystemStatus { border-top-color: #0f0; border-bottom-color: #0f0; color: #060; background: #cfc; }
 #ProjectsList li { margin: 0 0 5px 10px; }
 

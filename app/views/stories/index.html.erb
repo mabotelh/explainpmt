@@ -1,0 +1,8 @@
+<%= content_for(:story_search_form,'') %>
+<%= render :partial => 'story_links' %>
+<% empty_collection_content(@stories) do %>
+  <p>No active stories are in the project backlog.</p>
+<% end %>
+<div id="story_backlog">
+  <%= render :partial => 'display_backlog' %>
+</div>
