@@ -21,6 +21,7 @@ p { margin: 0.5em 0 1em; }
 
 
 /** header **/
+#Header {display: none}
 #Header h1 { padding: 10px 15px; }
 #Header h1 a { display: block; width: 208px; height: 56px; text-indent: -9999px; background: url(/images/logo2.png) 0 no-repeat; overflow: hidden; }
 #Header a { border: none; }
@@ -172,3 +173,12 @@ div.submit { display: block; clear: both; margin: 10px 0; text-align: center; }
 div.submit input { padding: 2px; background-color: #6DAE20; color: #fff; cursor: pointer; }
 a.close { float: right; }
 /* popup */
+
+/** content wrapper **/
+#contentwrapper{float: left; width: 100%;}
+/** end content wrapper **/
+
+
+/** left column **/
+#leftcolumn { display: none }
+/** end of left column **/
