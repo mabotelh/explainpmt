@@ -197,7 +197,6 @@ class StoriesControllerTest < Test::Unit::TestCase
       :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }
     set_referrer(path)
 
-    # test moving to an iteration
     post :move, 'id' => 1, 'project_id' => 1,
       'selected_stories' => [ 4, 5 ], 'move_to' => 'p|2'
     assert_redirected_to path

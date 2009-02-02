@@ -192,6 +192,7 @@ class Story < ActiveRecord::Base
         s.initiative = nil
         s.release_id = nil
         s.position = project.next_position
+        s.scid = project.next_scid
         if s.save
           successes << "SC#{s.scid} has been moved to project #{project.name}."
         else
@@ -248,13 +249,18 @@ class Story < ActiveRecord::Base
   end
 
   def before_create
-    if last_story = project.stories.find( :first, :order => 'scid DESC' )
-      self.scid = last_story.scid + 1
-    else
-      self.scid = 1
-    end
+    self.scid = self.project.next_scid
   end
 
+#  def next_scid(p)
+#    scid = 1
+#    if last_story = p.stories.find( :first, :order => 'scid DESC' )
+#      scid = last_story.scid + 1
+#    else
+#      scid = 1
+#    end
+#    return scid
+#  end
 
   def before_save
     self.owner = nil if self.iteration.nil?

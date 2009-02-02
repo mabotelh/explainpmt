@@ -147,5 +147,15 @@ class Project < ActiveRecord::Base
 #    pos = ls ? ls.scid + 1 : 1
     stories.last ? stories.last.position + 1 : 1
   end
+
+  def next_scid
+    scid = 1
+    if last_story = stories.find( :first, :order => 'scid DESC' )
+      scid = last_story.scid + 1
+#    else
+#      scid = 1
+    end
+    return scid
+  end
 end
 

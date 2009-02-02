@@ -36,6 +36,6 @@ class TaskTest < Test::Unit::TestCase
   
   def test_task_default_completed_state
     task = Task.new
-    assert !task.complete
+    assert task.status != Task::Status::Complete
   end
 end
