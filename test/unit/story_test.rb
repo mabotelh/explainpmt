@@ -244,6 +244,20 @@ class StoryTest < Test::Unit::TestCase
     a = Audit.find(:all, :conditions => {:object => 'Story', :audited_object_id => @story_one.id})
     assert a.empty?
   end
+
+  def test_task_relationship
+    s = Story.new({:points => 1, :project_id => 1, :risk => Story::Risk::Low, :status => Story::Status::New, :title => "New Story"})
+    t1 = Task.new({:name => "Task 1", :description => "Task 1 Desc", :status => Task::Status::New})
+    t5 = Task.new({:name => "Task 5", :description => "Task 5 Desc", :status => Task::Status::New})
+    t2 = Task.new({:name => "Task 2", :description => "Task 2 Desc", :status => Task::Status::InProgress})
+    t3 = Task.new({:name => "Task 3", :description => "Task 3 Desc", :status => Task::Status::ToVerify})
+    t4 = Task.new({:name => "Task 4", :description => "Task 4 Desc", :status => Task::Status::Complete})
+    s.tasks << [t1, t2, t3, t4, t5]
+    assert s.tasks.complete == [t4]
+    assert s.tasks.new == [t1,t5]
+    assert s.tasks.in_progress == [t2]
+    assert s.tasks.to_verify == [t3]
+  end
 end
 
 class StoryValueTest < Test::Unit::TestCase

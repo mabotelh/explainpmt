@@ -6,7 +6,24 @@ class Story < ActiveRecord::Base
   belongs_to :creator, :class_name => 'User', :foreign_key => :creator_id
   belongs_to :updater, :class_name => 'User', :foreign_key => :updater_id
   belongs_to :owner, :class_name => 'User', :foreign_key => :user_id
-  has_many :tasks, :dependent => :destroy
+  has_many :tasks, :dependent => :destroy do
+    def new
+      filter_status(Task::Status::New)
+    end
+    def in_progress
+      filter_status(Task::Status::InProgress)
+    end
+    def complete
+      filter_status(Task::Status::Complete)
+    end
+    def to_verify
+      filter_status(Task::Status::ToVerify)
+    end
+    private
+      def filter_status(status)
+        self.select { |t| t.status == status }
+      end
+  end
   has_many :acceptancetests, :dependent => :destroy
   acts_as_list :scope => :project_id
 
