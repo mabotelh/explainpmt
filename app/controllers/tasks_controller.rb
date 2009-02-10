@@ -12,9 +12,9 @@ class TasksController < ApplicationController
   end
 
   def create
+    modify_status_params
     @task = Task.new params[:task]
     @task.story = Story.find(params[:story_id])
-    modify_status_params
     render :update do |page|
       if @task.save
         flash[:status] = "New Task \"#{@task.name}\" has been created."
