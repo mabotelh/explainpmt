@@ -47,11 +47,15 @@ module IterationsHelper
     "#{iteration.name} (#{numeric_date(iteration.start_date)} - #{numeric_date(@iteration.stop_date)})"
   end
   
-  def iteration_select_list_for(iterations, default)
-    iterations.unshift(iterations.current) if iterations.current
-    iterations.delete_at(0)
+  def iteration_select_list_for(iterations, default, iteration_displayed)
+    #iterations.unshift(iterations.current) if iterations.current
+    #iterations.delete_at(0)
     iterations.reverse.inject("<option value='i|0'>#{default}</option>") do |options, iteration|
-      options << "<option value='i|#{iteration.id}'>#{iteration.name}</option>"
+      if iteration.id == iteration_displayed
+        options << ""
+      else
+        options << "<option value='i|#{iteration.id}'>#{iteration.name}</option>"
+      end
     end
   end
   

@@ -12,7 +12,7 @@
     <%= hidden_field_tag :move_to %>
     Move Selected Story Cards to:
     <%
-      options = iteration_select_list_for(iterations, default)
+      options = iteration_select_list_for(iterations, default, iteration_displayed)
       options << other_projects_select_list(other_projects)
     %>
     <%= select_tag selected_id, options, :onchange => "$('move_to').value = this.value" %>

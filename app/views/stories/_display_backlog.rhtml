@@ -1,11 +1,11 @@
   <% collection_content(@stories) do %>
     <%= form_tag move_project_stories_path(@project) %>
-      <%= render :partial => 'stories/move_stories_form', :locals => {:default => "Backlog", :selected_id => 'select1'} %>
+      <%= render :partial => 'stories/move_stories_form', :locals => {:default => "Backlog", :selected_id => 'select1', :iteration_displayed => 0} %>
       <%= render :partial => 'stories/stories' , :locals => {:hide_cols => [:project]}%>
       <% if @stories.size > 10 %>
         <br />
         <%= render :partial => 'stories/story_links' %>
-        <%= render :partial => 'stories/move_stories_form', :locals => {:default => "Backlog", :selected_id => 'select2'} %>
+        <%= render :partial => 'stories/move_stories_form', :locals => {:default => "Backlog", :selected_id => 'select2', :iteration_displayed => 0} %>
       <% end %>
     </form>
   <% end %>
