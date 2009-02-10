@@ -175,7 +175,43 @@ class StoriesControllerTest < Test::Unit::TestCase
       @controller.parse_destination('')
     end
   end
+###
+  def test_move_stories_raises_no_error_if_no_stories_selected
+    path = { :controller => 'iterations', :action => 'show',
+      :id => '1', :project_id => '1' }
+    set_referrer path
+    assert_nothing_raised do
+      post :move, :project_id => 1, :move_to => 'i|2'
+    end
+    assert_redirected_to path
+  end
+####
+  def test_move_stories
+    path = {:controller => 'stories', :action => 'index',
+      :project_id => '1'}
+    set_referrer(path)
+    post :move, :id => 1, :project_id => 1,
+      :selected_stories => [ 4, 5 ], :move_to => 'i|2'
+    assert_redirected_to path #project_iteration_path(1, 1)
+    sc_one = Story.find 4
+    assert_equal @iteration_two, sc_one.iteration
+    sc_two = Story.find 5
+    assert_equal @iteration_two, sc_two.iteration
+    assert flash[ :status ]
+  end
 
+  def test_move_stories_not_defined
+    path = {:controller => 'stories', :action => 'index',
+      :project_id => '1'}
+    set_referrer(path)
+    story = @project_one.stories.create 'title' => 'undefed story'
+    post :move, 'project_id' => 1,
+      'selected_stories' => [story.id], 'move_to' => 'i|1'
+    assert_redirected_to path
+    assert_nil flash[ :status ]
+    assert flash[ :error ]
+  end
+#####
   def test_move_to_iteration
     path = { :controller => 'iterations', :action => 'show',
       :id => @iteration_one.id.to_s, :project_id => @project_one.id.to_s }

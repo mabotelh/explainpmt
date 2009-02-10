@@ -86,15 +86,15 @@ class IterationsController < ApplicationController
     end
   end
 
-  def assign_stories
-    change_story_assignment
-    redirect_to project_iteration_path(@project, @iteration)
-  end
+#  def assign_stories
+#    change_story_assignment
+#    redirect_to project_iteration_path(@project, @iteration)
+#  end
 
-  def move_stories
-    change_story_assignment
-    redirect_to request.referer
-  end
+#  def move_stories
+#    change_story_assignment
+#    redirect_to request.referer
+#  end
 
   def export
     @stories = @iteration.stories
@@ -114,9 +114,9 @@ class IterationsController < ApplicationController
     end
   end
 
-  def change_story_assignment
-    iteration = Iteration.find_by_id(params[:move_to])
-    stories = Story.find(params[:selected_stories] || [])
-    set_status_and_error_for(Story.assign_many_to_iteration(iteration, stories))
-  end
+#  def change_story_assignment
+#    iteration = Iteration.find_by_id(params[:move_to])
+#    stories = Story.find(params[:selected_stories] || [])
+#    set_status_and_error_for(Story.assign_many_to_iteration(iteration, stories))
+#  end
 end

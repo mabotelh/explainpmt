@@ -31,7 +31,8 @@
       <% end %>
 
       <% collection_content(@stories) do %>
-        <%= form_tag move_stories_project_iterations_path(@project) %>
+        <%#= form_tag move_stories_project_iterations_path(@project) %>
+<%= form_tag move_project_stories_path(@project) %>
         <%= render :partial => 'stories/move_stories_form', :locals => {:default => "Backlog", :selected_id => 'select1'} %>
         <%= render( :partial => 'stories/stories', :locals => {:hide_cols => [ :project, :iteration]}) %>
         </form>
