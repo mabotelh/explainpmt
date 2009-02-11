@@ -15,7 +15,7 @@
       options = iteration_select_list_for(iterations, default, iteration_displayed)
       options << other_projects_select_list(other_projects)
     %>
-    <%= select_tag selected_id, options, :onchange => "$('move_to').value = this.value" %>
-    <%= submit_tag "Go" %>
+    <%= select_tag selected_id, options %>
+    <%= submit_tag "Go", :onclick => "$('move_to').value = #{selected_id}.value" %>
   <% end %>
 </div>
