@@ -101,10 +101,10 @@ class StoryTest < Test::Unit::TestCase
     Story.assign_many_to_project(project, [s1,s2])
     assert_nil s1.iteration
     assert_nil s2.iteration
-    assert pos + 1, s1.position
-    assert pos + 2, s2.position
-    assert 1, s1.scid
-    assert 2, s2.scid
+    assert_equal pos + 1, s1.position
+    assert_equal pos + 2, s2.position
+    assert_equal 1, s1.scid
+    assert_equal 2, s2.scid
     assert_equal p1.stories.count, p1.last_story.position
     assert_equal p2.stories.count, p2.last_story.position
   end

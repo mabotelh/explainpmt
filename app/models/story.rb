@@ -198,6 +198,7 @@ class Story < ActiveRecord::Base
         else
           failures << "SC#{s.scid} could not be moved to project #{project.name}. (make sure it is defined)"
         end
+        project.reload
       end
     end
     projects.each do |p|
