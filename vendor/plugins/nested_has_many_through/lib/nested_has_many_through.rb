@@ -51,7 +51,7 @@ module ActiveRecord #:nodoc:
   end
 
   module Associations #:nodoc:
-    class HasManyThroughAssociation < AssociationProxy #:nodoc:
+    class HasManyThroughAssociation < HasManyAssociation #:nodoc:
     
       def initialize(owner, reflection)
         super
