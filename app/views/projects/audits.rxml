@@ -9,7 +9,7 @@ xml.rss(:version => "2.0") do
     xml.pubDate()
 
     for audit in @audits do
-      if story = Story.find(:first, audit.audited_object_id)
+      if story = Story.find(audit.audited_object_id)
         xml.item do
           xml.title("(SC-#{audit.audited_object_id.to_s}) #{story.title}")
           xml.link("#{url_for :only_path => false, :controller => 'stories', :action => 'audit_story', :project_id => Project.find(audit.project_id), :id => audit.audited_object_id}")
