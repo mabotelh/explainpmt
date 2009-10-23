@@ -31,7 +31,7 @@ class UsersControllerTest < ActionController::TestCase
     actions = [ :index, :edit, :update, :delete ]
     actions.each do |a|
       process a
-      assert_redirected_to :controller => 'users', :action => 'login'
+      assert_redirected_to login_users_path
       assert session[ :return_to ]
     end
   end
@@ -235,7 +235,7 @@ class UsersControllerTest < ActionController::TestCase
   
   def test_should_redirect_to_login_after_authentication_failure
     post :authenticate
-    assert_redirected_to :controller => 'users', :action => 'login'
+    assert_redirected_to login_users_path
   end
   
   def test_should_set_flash_error_after_authentication_failure
