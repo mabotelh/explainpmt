@@ -10,3 +10,4 @@ public/images/*.svg
 nbproject*
 config/database.yml
 nbproject
+*~
