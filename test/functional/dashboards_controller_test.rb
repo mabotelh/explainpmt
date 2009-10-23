@@ -6,7 +6,7 @@ require 'dashboards_controller'
 # Re-raise errors caught by the controller.
 class DashboardsController; def rescue_action(e) raise e end; end
 
-class DashboardsControllerTest < Test::Unit::TestCase
+class DashboardsControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
   def setup
     @admin = User.find 1
@@ -22,7 +22,7 @@ class DashboardsControllerTest < Test::Unit::TestCase
   def test_authentication_required
     @request.session[:current_user] = nil
     get :index
-    assert_redirected_to :controller => 'users', :action => 'login'
+    assert_redirected_to login_users_path
     assert_equal '/dashboards', session[:return_to]
   end
 
