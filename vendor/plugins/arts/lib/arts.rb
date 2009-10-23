@@ -26,10 +26,10 @@ module Arts
     unless content.blank?
       case content
         when Regexp
-          assert_match Regexp.new("new Insertion\.#{position.to_s.camelize}(.*#{item_id}.*,.*#{content.source}.*);"),
+          assert_match Regexp.new("Element.insert\\(\"#{item_id}\",\\ \\{\\ #{position.to_s}.*#{content.source}.*"),
                        @response.body
         when String
-          assert_response_contains("new Insertion.#{position.to_s.camelize}(\"#{item_id}\", #{content});",
+          assert_response_contains("Element.insert(\"#{item_id}\", { #{position.to_s}: #{content} });",
                  "No insert_html call found for \n" +
                  "     position: '#{position}' id: '#{item_id}' \ncontent: \n" +
                  "#{content}\n" +
@@ -38,7 +38,7 @@ module Arts
           raise "Invalid content type"
       end
     else
-      assert_match Regexp.new("new Insertion\.#{position.to_s.camelize}(.*#{item_id}.*,.*?);"), 
+      assert_match Regexp.new("Element.insert\\(\"#{item_id}\",\\ \\{\\ #{position.to_s}.*\\);"), 
                    @response.body
     end
   end
@@ -130,4 +130,14 @@ module Arts
       return create_generator.send(:arguments_for_call, args)
     end
   end
+  
+  public
+
+  # hack for rails 2.2.2
+  def with_output_buffer(lines=[], &block)
+    block.call
+  end
+  
+  
+  
 end
