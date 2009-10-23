@@ -4,7 +4,7 @@ require 'initiatives_controller'
 # Re-raise errors caught by the controller.
 class InitiativesController; def rescue_action(e) raise e end; end
 
-class InitiativesControllerTest < Test::Unit::TestCase
+class InitiativesControllerTest < ActionController::TestCase
   def setup
     @controller = InitiativesController.new
     @request    = ActionController::TestRequest.new

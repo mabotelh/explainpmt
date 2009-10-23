@@ -7,7 +7,7 @@ require 'users_controller'
 # Re-raise errors caught by the controller.
 class UsersController; def rescue_action(e) raise e end; end
 
-class UsersControllerTest < Test::Unit::TestCase
+class UsersControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
   def setup
     @admin = User.find 1

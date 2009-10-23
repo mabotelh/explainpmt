@@ -4,7 +4,7 @@ require 'tasks_controller'
 # Re-raise errors caught by the controller.
 class TasksController; def rescue_action(e) raise e end; end
 
-class TasksControllerTest < Test::Unit::TestCase
+class TasksControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
 
   def setup

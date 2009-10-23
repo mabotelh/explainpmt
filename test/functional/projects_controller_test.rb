@@ -4,7 +4,7 @@ require 'projects_controller'
 # Re-raise errors caught by the controller.
 class ProjectsController; def rescue_action(e) raise e end; end
 
-class ProjectsControllerTest < Test::Unit::TestCase
+class ProjectsControllerTest < ActionController::TestCase
   FULL_PAGES = [:index, :new, :edit]
   POPUPS = [:add_users,:update_users]
   NO_RENDERS = [:remove_user,:destroy, :create, :update]

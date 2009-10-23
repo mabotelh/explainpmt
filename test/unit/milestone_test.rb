@@ -3,7 +3,7 @@
 
 require File.dirname(__FILE__) + '/../test_helper'
 
-class MilestoneTest < Test::Unit::TestCase
+class MilestoneTest < ActiveSupport::TestCase
   fixtures ALL_FIXTURES
 
   def setup

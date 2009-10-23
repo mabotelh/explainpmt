@@ -4,7 +4,7 @@ require 'milestones_controller'
 # Re-raise errors caught by the controller.
 class MilestonesController; def rescue_action(e) raise e end; end
 
-class MilestonesControllerTest < Test::Unit::TestCase
+class MilestonesControllerTest < ActionController::TestCase
   FULL_PAGES = [:index]
   POPUPS = [ :new,:create,:show,:edit,:update ]
   NO_RENDERS = [:delete]

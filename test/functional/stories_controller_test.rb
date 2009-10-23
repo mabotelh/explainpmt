@@ -5,11 +5,9 @@ require 'application_helper'
 # Re-raise errors caught by the controller.
 class StoriesController; def rescue_action(e) raise e end; end
 
-class StoriesControllerTest < Test::Unit::TestCase
+class StoriesControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
 
-  include Arts
-  
   def setup
     @user_one = User.find 2
     @project_one = Project.find 1

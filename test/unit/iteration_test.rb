@@ -1,7 +1,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class IterationTest < Test::Unit::TestCase
+class IterationTest < ActiveSupport::TestCase
   fixtures ALL_FIXTURES
+
+  def logger
+    RAILS_DEFAULT_LOGGER
+  end
+
   def setup
     @project_one = Project.find 1
     @iteration_one = Iteration.find 1
@@ -109,10 +114,11 @@ class IterationTest < Test::Unit::TestCase
     assert s.save
     assert_equal Story::Status::New, s.status
     @iteration_two.stories << s
-    @iteration_two.stories.each do |story|
-      assert !story.valid?
-    end
-    assert !@iteration_two.valid?
+    assert @iteration_two.stories.empty?
+#    @iteration_two.stories.each do |story|
+#      assert !story.valid?
+#    end
+#    assert !@iteration_two.valid?
 
   end
 

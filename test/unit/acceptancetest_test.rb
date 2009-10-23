@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class AcceptancetestTest < Test::Unit::TestCase
+class AcceptancetestTest < ActiveSupport::TestCase
   fixtures ALL_FIXTURES
   
   def setup

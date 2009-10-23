@@ -4,7 +4,7 @@ require 'iterations_controller'
 # Re-raise errors caught by the controller.
 class IterationsController; def rescue_action(e) raise e end; end
 
-class IterationsControllerTest < Test::Unit::TestCase
+class IterationsControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
 
   def setup

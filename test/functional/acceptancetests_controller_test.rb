@@ -4,7 +4,7 @@ require 'acceptancetests_controller'
 # Re-raise errors caught by the controller.
 class AcceptancetestsController; def rescue_action(e) raise e end; end
 
-class AcceptancetestsControllerTest < Test::Unit::TestCase
+class AcceptancetestsControllerTest < ActionController::TestCase
   fixtures ALL_FIXTURES
   
   def setup
